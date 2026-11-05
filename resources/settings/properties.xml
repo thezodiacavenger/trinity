@@ -1,0 +1,13 @@
+<resources>
+    <properties>
+        <property id="ActiveKcalGoal" type="number">900</property>
+        <property id="WorkStartHour" type="number">8</property>
+        <property id="WorkEndHour" type="number">17</property>
+        <property id="MeetingCapMin" type="number">240</property>
+        <property id="CalmGoalMin" type="number">90</property>
+        <property id="LifeGoalMin" type="number">90</property>
+        <property id="ReadingGoalMin" type="number">30</property>
+        <property id="BridgeUrl" type="string"></property>
+        <property id="BridgeToken" type="string"></property>
+    </properties>
+</resources>

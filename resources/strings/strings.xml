@@ -1,0 +1,14 @@
+<resources>
+    <strings>
+        <string id="AppName">Trinity</string>
+        <string id="SetKcalGoal">Active calorie goal (kcal)</string>
+        <string id="SetWorkStart">Work day starts (hour, 0-23)</string>
+        <string id="SetWorkEnd">Work day ends (hour, 0-23)</string>
+        <string id="SetMeetingCap">Meeting cap per day (minutes)</string>
+        <string id="SetCalmGoal">Calm time goal while awake (minutes)</string>
+        <string id="SetLifeGoal">Personal time goal (minutes)</string>
+        <string id="SetReadGoal">Reading goal (minutes)</string>
+        <string id="SetBridgeUrl">Trinity Bridge URL (optional)</string>
+        <string id="SetBridgeToken">Trinity Bridge token</string>
+    </strings>
+</resources>

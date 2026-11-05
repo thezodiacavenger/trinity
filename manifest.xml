@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- Trinity watch face: Work · Body · Life, modulated by Readiness. -->
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+    <iq:application id="83134d52-4de5-4521-817c-16c116da5ab3"
+                    type="watchface"
+                    name="@Strings.AppName"
+                    entry="TrinityApp"
+                    launcherIcon="@Drawables.LauncherIcon"
+                    minApiLevel="4.2.0">
+        <iq:products>
+            <!-- Primary target: Forerunner 265 (416x416 AMOLED). 265S and 965 share the code path. -->
+            <iq:product id="fr265"/>
+            <iq:product id="fr265s"/>
+            <iq:product id="fr965"/>
+        </iq:products>
+        <iq:permissions>
+            <iq:uses-permission id="Background"/>
+            <iq:uses-permission id="Communications"/>
+            <iq:uses-permission id="ComplicationSubscriber"/>
+            <iq:uses-permission id="SensorHistory"/>
+            <iq:uses-permission id="UserProfile"/>
+        </iq:permissions>
+        <iq:languages>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

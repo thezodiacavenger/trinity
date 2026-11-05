@@ -1,0 +1,428 @@
+<title>Trinity Watch Face</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: instrument-panel brief. Wide two-column hero (live face + thesis), then reading sections at ~68ch, tables in scroll boxes. */
+:root {
+  --bg: #F3F5F7;
+  --surface: #FFFFFF;
+  --fg: #141A21;
+  --muted: #5B6673;
+  --rule: #D9DEE4;
+  --accent: #1F6FD1;
+  --work: #1F6FD1;
+  --body: #E2531F;
+  --life: #129A68;
+  --warn: #B87800;
+  --stop: #C62828;
+  --chip: #E8EDF3;
+  --font-display: "Barlow Condensed", "Arial Narrow", "Roboto Condensed", sans-serif;
+  --font-body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0E1216; --surface: #161C22; --fg: #E8ECF0; --muted: #96A1AD; --rule: #2A333D;
+  --accent: #5AA8FF; --work: #5AA8FF; --body: #FF7A4D; --life: #3DDC97; --warn: #FFB000; --stop: #FF5A5A; --chip: #1F2730;
+  color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #0E1216; --surface: #161C22; --fg: #E8ECF0; --muted: #96A1AD; --rule: #2A333D;
+  --accent: #5AA8FF; --work: #5AA8FF; --body: #FF7A4D; --life: #3DDC97; --warn: #FFB000; --stop: #FF5A5A; --chip: #1F2730;
+  color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--font-body);
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 32px 64px; }
+.wrap { max-width: 1080px; margin: 0 auto; display: flex; flex-direction: column; gap: 56px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; line-height: 1.1; text-wrap: balance; margin: 0; }
+h1 { font-size: clamp(44px, 7vw, 72px); letter-spacing: 0.01em; }
+h2 { font-size: 34px; }
+h3 { font-size: 22px; }
+p { margin: 0; }
+.eyebrow { font: 500 12px/1 var(--font-mono); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.lede { font-size: 19px; max-width: 60ch; }
+.muted { color: var(--muted); }
+section { display: flex; flex-direction: column; gap: 18px; }
+.prose { max-width: 70ch; display: flex; flex-direction: column; gap: 14px; }
+.tag { font-family: var(--font-display); font-weight: 600; letter-spacing: 0.04em; }
+.t-work { color: var(--work); } .t-body { color: var(--body); } .t-life { color: var(--life); }
+a { color: var(--accent); }
+code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
+
+/* Hero */
+.hero { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 40px; align-items: center; }
+.hero-text { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+.pillars { display: flex; flex-wrap: wrap; gap: 8px; }
+.pill { font: 600 15px/1 var(--font-display); letter-spacing: 0.06em; text-transform: uppercase; padding: 8px 12px; border-radius: 999px; background: var(--chip); }
+.watch { width: 100%; max-width: 420px; aspect-ratio: 1; justify-self: center; }
+
+/* Simulator */
+.sim { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 32px; background: var(--surface); border: 1px solid var(--rule); border-radius: 14px; padding: 24px; }
+.controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 20px; }
+.ctl { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ctl label { display: flex; justify-content: space-between; gap: 8px; font-size: 13px; color: var(--muted); }
+.ctl output { font-family: var(--font-mono); color: var(--fg); font-variant-numeric: tabular-nums; }
+input[type=range] { width: 100%; accent-color: var(--accent); }
+.presets { display: flex; flex-wrap: wrap; gap: 8px; grid-column: 1 / -1; }
+button { font: 500 13px/1 var(--font-body); padding: 9px 12px; border-radius: 8px; border: 1px solid var(--rule); background: var(--bg); color: var(--fg); cursor: pointer; }
+button:hover { border-color: var(--accent); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.readout { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.readout .watch { max-width: 340px; }
+.scores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.score { display: flex; flex-direction: column; gap: 2px; padding: 10px; border-radius: 8px; background: var(--chip); }
+.score b { font: 600 26px/1 var(--font-display); font-variant-numeric: tabular-nums; }
+.score span { font: 500 11px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+.why { font-size: 14px; color: var(--muted); }
+
+/* Tables */
+.tbl { overflow-x: auto; border: 1px solid var(--rule); border-radius: 10px; background: var(--surface); }
+table { border-collapse: collapse; width: 100%; min-width: 640px; font-size: 14.5px; }
+th, td { text-align: left; padding: 10px 14px; border-bottom: 1px solid var(--rule); vertical-align: top; }
+th { font: 600 12px/1.2 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+.ok, .no, .est { font: 600 12px/1 var(--font-mono); padding: 4px 7px; border-radius: 5px; white-space: nowrap; }
+.ok { color: var(--life); background: color-mix(in srgb, var(--life) 14%, transparent); }
+.no { color: var(--stop); background: color-mix(in srgb, var(--stop) 12%, transparent); }
+.est { color: var(--warn); background: color-mix(in srgb, var(--warn) 14%, transparent); }
+
+/* Findings grid */
+.grid3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.card { background: var(--surface); border: 1px solid var(--rule); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.card p { font-size: 15px; }
+.src { font-size: 12.5px; color: var(--muted); }
+
+/* Day timeline */
+.day { display: grid; grid-template-columns: repeat(18, minmax(0, 1fr)); gap: 2px; min-width: 640px; }
+.day div { height: 34px; border-radius: 3px; font: 500 11px/34px var(--font-mono); text-align: center; color: #fff; overflow: hidden; white-space: nowrap; }
+.day .h { height: auto; line-height: 1.4; color: var(--muted); background: none; }
+.c-body { background: var(--body); } .c-work { background: var(--work); } .c-life { background: var(--life); } .c-sleep { background: var(--muted); }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--muted); }
+.legend i { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+ol.phases { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 0; border-left: 2px solid var(--rule); }
+ol.phases li { padding: 0 0 22px 22px; position: relative; display: flex; flex-direction: column; gap: 6px; max-width: 72ch; }
+ol.phases li::before { content: ""; position: absolute; left: -7px; top: 6px; width: 12px; height: 12px; border-radius: 50%; background: var(--surface); border: 2px solid var(--muted); }
+ol.phases li.done::before { background: var(--life); border-color: var(--life); }
+.status { font: 600 11px/1 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--muted); }
+ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 6px; }
+
+@media (max-width: 860px) {
+  .hero, .sim { grid-template-columns: minmax(0, 1fr); }
+  .grid3 { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 480px) {
+  .controls { grid-template-columns: minmax(0, 1fr); }
+  .scores { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sim { padding: 16px; }
+}
+@media (prefers-reduced-motion: no-preference) { .arc-fill { transition: d 0.25s ease; } }
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-text">
+      <span class="eyebrow">Design brief · Forerunner 265 · Connect IQ</span>
+      <h1>Trinity</h1>
+      <p class="lede">A watch face for people who run a full work day, train once or twice a day, and still want a life outside both. Three arcs show where the day stands on <span class="tag t-work">WORK</span>, <span class="tag t-body">BODY</span> and <span class="tag t-life">LIFE</span>. A readiness score at the centre, built from sleep, Body Battery and stress, raises or lowers the targets.</p>
+      <div class="pillars">
+        <span class="pill t-work">Work: the day's load</span>
+        <span class="pill t-body">Body: output vs target</span>
+        <span class="pill t-life">Life: recharge time</span>
+      </div>
+      <p class="muted">The face is the first piece. A calendar bridge and an on-watch app come after it, as laid out below.</p>
+    </div>
+    <svg class="watch" id="heroWatch" viewBox="0 0 416 416" role="img" aria-label="Trinity watch face mockup"></svg>
+  </header>
+
+  <section>
+    <span class="eyebrow">Try the model</span>
+    <h2>One day, three pillars</h2>
+    <p class="prose muted">Move the sliders or pick a scenario. The face below runs the same formulas as the watch code, so you can test whether the nudges match how you would actually want to be coached.</p>
+    <div class="sim">
+      <div class="controls" id="controls">
+        <div class="presets">
+          <button type="button" data-preset="strong">Strong morning</button>
+          <button type="button" data-preset="short">Short night, heavy calendar</button>
+          <button type="button" data-preset="evening">Evening after two sessions</button>
+          <button type="button" data-preset="overtime">Still at the desk at 19:30</button>
+        </div>
+      </div>
+      <div class="readout">
+        <svg class="watch" id="simWatch" viewBox="0 0 416 416" role="img" aria-label="Simulated Trinity watch face"></svg>
+        <div class="scores" id="scores"></div>
+        <p class="why" id="why"></p>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Research</span>
+    <h2>How executive athletes actually run their days</h2>
+    <div class="prose">
+      <p>The design rests on a small body of evidence and a lot of consistent public reporting. The pattern holds across very different leaders: training is booked like a meeting, recovery is planned rather than left to chance, and the calendar is where the trade-offs get made.</p>
+    </div>
+    <div class="grid3">
+      <div class="card">
+        <h3>Energy, not time, is the constraint</h3>
+        <p>Loehr and Schwartz's "corporate athlete" work argues that sustained high performance comes from cycling between stress and recovery, the way athletes train. That cycle is the whole idea behind Trinity: no pillar should stay maxed out while another sits empty.</p>
+        <p class="src">Loehr &amp; Schwartz, "The Making of a Corporate Athlete," Harvard Business Review, 2001.</p>
+      </div>
+      <div class="card">
+        <h3>Fit CEOs, stronger firms</h3>
+        <p>A study of S&amp;P 1500 CEOs from 2001 to 2011 found that firms led by CEOs who finished a marathon were valued about 5% higher, after controls. This is a correlation and not proof of cause, but boards and investors cite it.</p>
+        <p class="src">"Does CEO Fitness Matter?" (Limbach &amp; Sonnenburg), reported by <a href="https://runningmagazine.ca/?p=19831">Canadian Running</a>.</p>
+      </div>
+      <div class="card">
+        <h3>Sleep is the multiplier</h3>
+        <p>The adult consensus is seven or more hours. Executives who train hard on short sleep do worse at both. That is why Trinity lowers the body target when readiness is low instead of pushing harder.</p>
+        <p class="src">AASM / Sleep Research Society consensus statement, 2015.</p>
+      </div>
+    </div>
+    <div class="prose">
+      <h3>Publicly reported routines</h3>
+      <ul>
+        <li><b>Bob Iger</b> wrote that he gets up around 4:15 a.m. to exercise and think before the work day begins.</li>
+        <li><b>Tim Cook</b> is reported to start before 5 a.m. with email and then the gym.</li>
+        <li><b>Anna Wintour</b> is known for an early tennis session every day.</li>
+        <li><b>Richard Branson</b> credits daily exercise (kitesurfing, tennis, cycling) with roughly doubling his productivity.</li>
+        <li><b>Barack Obama</b> kept a daily workout of about 45 minutes through his presidency.</li>
+        <li><b>Warren Buffett</b> and <b>Bill Gates</b> both treat reading as protected time: Buffett spends most of his day reading, Gates about 50 books a year. Reading is part of Trinity for that reason.</li>
+      </ul>
+      <h3>What the pattern means for the design</h3>
+      <ul>
+        <li><b>The morning block is sacred.</b> Most training happens before 8 a.m. The face needs to show output early and not nag during meetings.</li>
+        <li><b>The failure mode is stacking.</b> A hard session, a short night and a high-stress board day each look fine on their own. Together they add up to overreach. Readiness has to modulate the targets.</li>
+        <li><b>The calendar is the control surface.</b> These people already block "Gym" and "Read" in the calendar. Trinity should read those blocks and never ask for manual logging on the wrist.</li>
+        <li><b>Glanceable over detailed.</b> A two-second look between meetings. One nudge, never a dashboard.</li>
+        <li><b>Discretion.</b> A watch face is visible across a boardroom table. Show "MTG IN 8m", never the meeting title.</li>
+      </ul>
+    </div>
+    <h3>The 18-hour day Trinity is designed around</h3>
+    <div class="tbl" style="padding:14px">
+      <div class="day" aria-label="Example day from 5:00 to 23:00">
+        <div class="h">5</div><div class="h">6</div><div class="h">7</div><div class="h">8</div><div class="h">9</div><div class="h">10</div><div class="h">11</div><div class="h">12</div><div class="h">13</div><div class="h">14</div><div class="h">15</div><div class="h">16</div><div class="h">17</div><div class="h">18</div><div class="h">19</div><div class="h">20</div><div class="h">21</div><div class="h">22</div>
+        <div class="c-body">Train</div><div class="c-body">Train</div><div class="c-life">Family</div><div class="c-work">Exec</div><div class="c-work">MTG</div><div class="c-work">Focus</div><div class="c-work">MTG</div><div class="c-life">Lunch</div><div class="c-work">MTG</div><div class="c-work">MTG</div><div class="c-work">Focus</div><div class="c-work">MTG</div><div class="c-body">Ride</div><div class="c-life">Dinner</div><div class="c-life">Kids</div><div class="c-life">Read</div><div class="c-life">Wind</div><div class="c-sleep">Sleep</div>
+      </div>
+    </div>
+    <div class="legend"><span><i class="c-body"></i>Body</span><span><i class="c-work"></i>Work</span><span><i class="c-life"></i>Life</span><span><i class="c-sleep"></i>Sleep</span></div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Capabilities</span>
+    <h2>What the Forerunner 265 will give a third-party face</h2>
+    <p class="prose">Garmin exposes a lot through the Complications API (Connect IQ 4.2 and later), but not everything you see in Garmin's own widgets. These limits shaped the design, so they matter more than anything else in this brief.</p>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Signal</th><th>Access</th><th>How Trinity uses it</th></tr></thead>
+        <tbody>
+          <tr><td>Time, date, heart rate, steps and step goal</td><td><span class="ok">Yes</span></td><td>Face basics. Steps are 25% of BODY.</td></tr>
+          <tr><td>Calories today (total)</td><td><span class="ok">Yes</span></td><td>Active calories are estimated as total minus resting burn from your profile (Mifflin-St Jeor), prorated to the time of day.</td></tr>
+          <tr><td>Active calories as Garmin shows them</td><td><span class="est">Estimated</span></td><td>No direct API. The estimate should land close to Garmin's figure; check it against Garmin Connect for a week.</td></tr>
+          <tr><td>Intensity minutes (day and week, weekly goal)</td><td><span class="ok">Yes</span></td><td>15% of BODY, against one-seventh of your weekly goal.</td></tr>
+          <tr><td>Body Battery, stress level</td><td><span class="ok">Yes</span></td><td>Core inputs to READY. Stress history also gives "calm minutes" for LIFE.</td></tr>
+          <tr><td>Recovery time (hours remaining)</td><td><span class="ok">Yes</span></td><td>Subtracts up to 25 points from READY.</td></tr>
+          <tr><td>Sleep score</td><td><span class="est">Firmware</span></td><td>Exposed from Connect IQ API 6.0.2. Used when the watch's firmware provides it; READY reweights when it is missing.</td></tr>
+          <tr><td>Next calendar event</td><td><span class="ok">Time only</span></td><td>Garmin gives the start time of the next event, with no title and no date. That suits a boardroom. Categories come from the Bridge.</td></tr>
+          <tr><td>Bed and wake times</td><td><span class="ok">Yes</span></td><td>Sets when calm time starts counting and when "WIND DOWN" appears.</td></tr>
+          <tr><td>HRV status, Training Readiness score</td><td><span class="no">No</span></td><td>Not exposed to third-party faces. READY is Trinity's own stand-in.</td></tr>
+          <tr><td>Reading time</td><td><span class="no">No sensor</span></td><td>Comes from "Read" blocks in your calendar through the Bridge, and later from a reading timer in the Trinity app.</td></tr>
+          <tr><td>Web data (calendar categories)</td><td><span class="ok">Background</span></td><td>A background job can fetch through the Garmin Connect phone app every 5 minutes at most. Trinity uses every 15 minutes to save battery.</td></tr>
+          <tr><td>Touch or button input on the face</td><td><span class="no">No</span></td><td>Watch faces cannot take input. Logging and timers belong in the companion app.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="prose muted">AMOLED always-on mode limits how many pixels may stay lit and requires burn-in protection. In that mode Trinity drops the arcs and shows only a dimmed time and the next event, shifted a few pixels each minute.</p>
+  </section>
+
+  <section>
+    <span class="eyebrow">The model</span>
+    <h2>How each arc fills</h2>
+    <div class="tbl">
+      <table>
+        <thead><tr><th>Pillar</th><th>Formula</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td class="tag">READY (core)</td><td class="mono">0.45·BodyBattery + 0.30·SleepScore + 0.25·(100 − Stress), minus up to 25 for recovery hours (72 h max)</td><td>Weights shift automatically to the signals that exist. Green at 70 or above, amber from 40, red below 40.</td></tr>
+          <tr><td class="tag t-body">BODY</td><td class="mono">0.60·active kcal ÷ adjusted goal + 0.25·steps ÷ goal + 0.15·intensity min ÷ (weekly goal ÷ 7)</td><td>The adjusted goal is 100% of your target at READY 70+, 80% from 40 to 69, and 60% below 40. A bad night gives you a smaller target.</td></tr>
+          <tr><td class="tag t-work">WORK</td><td class="mono">progress through the work window (default 08:00–17:00, Mon–Fri)</td><td>The arc turns amber after more than an hour of overtime, or when meetings exceed your daily cap (default 4 h, needs the Bridge).</td></tr>
+          <tr><td class="tag t-life">LIFE</td><td class="mono">calm minutes since waking ÷ goal. With the Bridge: 50% calm + 50% (personal + reading min) ÷ (goals)</td><td>Calm minutes are time at Garmin's "rest" stress level while awake: a measured proxy for actually switching off.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="prose">
+      <h3>Nudges, in priority order</h3>
+      <p>The face shows one line at the bottom. The first rule that matches wins. When an event starts within 10 minutes, the next-event line above it turns white instead.</p>
+      <ul>
+                <li><b>RECOVERY DAY</b>: READY is under 30.</li>
+        <li><b>BREATHE 2 MIN</b>: stress is 76 or higher.</li>
+        <li><b>WRAP UP WORK</b>: more than an hour past the end of the work day.</li>
+        <li><b>GUARD A GAP</b>: meetings are over the cap and the work day is not over.</li>
+        <li><b>TRAIN WINDOW</b>: after 15:00, BODY is under half, READY is 50 or higher, and bedtime is more than 2.5 h away.</li>
+        <li><b>READ 20 MIN</b>: after 19:00 and reading is short of the goal.</li>
+        <li><b>WIND DOWN</b>: within an hour of your bedtime.</li>
+        <li><b>WALK 10</b>: after 11:00, under 30% of the step goal.</li>
+        <li><b>IN BALANCE</b>: BODY 90%+ and LIFE 60%+.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Calendar and privacy</span>
+    <h2>The Trinity Bridge</h2>
+    <div class="prose">
+      <p>The native calendar complication only gives a start time. To tell a meeting from lunch from a reading block, Trinity uses a small script that runs in your own calendar account. It reads today's events, sorts them into categories by keywords in the title, and returns only minutes per category plus the next category. Titles, attendees and locations never leave your account.</p>
+      <p>Default keywords: <b>TRAIN</b> for gym, run, ride, swim, workout, yoga, tennis or golf; <b>READ</b> for read or book; <b>LUNCH</b>; <b>PERS</b> for family, kids, dinner or doctor; <b>FOCUS</b> for focus, deep work or hold. Events with other guests that match no keyword count as <b>MTG</b>.</p>
+      <p>The Google Calendar version is written and tested. If your work calendar is Outlook / Microsoft 365, the same logic needs a Microsoft Graph version (a Power Automate flow or a small Azure Function). That depends on how Vistek IT allows calendar access.</p>
+    </div>
+  </section>
+
+  <section>
+    <span class="eyebrow">Roadmap</span>
+    <h2>Build order</h2>
+    <ol class="phases">
+      <li class="done"><span class="status">Phase 1 · code drafted</span><h3>Trinity watch face</h3><p>The three arcs, READY, the stats row, the next event and nudges, using on-watch data only. Settings in Garmin Connect for the calorie goal, work hours, meeting cap and the calm, personal and reading goals. Needs a first build in the Connect IQ simulator.</p></li>
+      <li class="done"><span class="status">Phase 2 · Google version drafted</span><h3>Trinity Bridge</h3><p>Calendar categories, meeting load and reading blocks. Google Apps Script is written and its logic tests pass. A Microsoft 365 variant is pending your calendar decision.</p></li>
+      <li><span class="status">Phase 3 · next</span><h3>Trinity app and glance</h3><p>An on-watch app for what a face cannot do: a full breakdown screen for each pillar, a "Start reading" timer, a two-minute breathing reset when stress spikes, and a weekly balance view showing which pillar went short. The glance shows today's READY and the weakest pillar.</p></li>
+      <li><span class="status">Phase 4</span><h3>Weekly review</h3><p>A Sunday summary on the phone or web: balance by day, nights under seven hours, overtime hours and reading minutes. This is the executive view, and where the targets for the week ahead get adjusted.</p></li>
+    </ol>
+  </section>
+
+  <section>
+    <span class="eyebrow">Decisions needed</span>
+    <h2>Before the first build</h2>
+    <div class="prose">
+      <ul>
+        <li><b>Calendar source:</b> Google, Outlook / Microsoft 365, or both. This decides which Bridge to finish.</li>
+        <li><b>Targets:</b> the daily active-calorie goal (the draft default is 900 kcal, which suits one to two hours of training), work hours, and the daily meeting cap.</li>
+        <li><b>Distribution:</b> sideload onto your own watch only, or publish to the Connect IQ Store, which needs a developer account, a review and a privacy statement.</li>
+        <li><b>Developer setup:</b> a Garmin developer account and the Connect IQ SDK with the VS Code extension, to compile and run the face in the simulator.</li>
+      </ul>
+    </div>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  const C = { work: '#3D9BFF', body: '#FF6A3D', life: '#3DDC97', warn: '#FFB000', stop: '#FF3B3B', track: '#262626', text: '#FFFFFF', muted: '#9A9A9A' };
+  const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+  const ratio = (v, g) => (g > 0 ? clamp(v / g, 0, 1) : 0);
+
+  // ---- Same model as source/Scoring.mc and source/Nudge.mc
+  const cfg = { kcalGoal: 900, workStart: 8, workEnd: 17, meetingCap: 240, calmGoal: 90, lifeGoal: 90, readGoal: 30, stepGoal: 10000, imWeekGoal: 150, bed: 22 * 60 + 30 };
+  function model(s) {
+    let sum = 0.45 * s.bb + 0.30 * s.sleep + 0.25 * (100 - s.stress);
+    let ready = sum / 1.0 - clamp(s.recovery / 72 * 25, 0, 25);
+    ready = Math.round(clamp(ready, 0, 100));
+    const factor = ready >= 70 ? 1 : ready >= 40 ? 0.8 : 0.6;
+    const adjGoal = Math.round(cfg.kcalGoal * factor);
+    const body = 0.60 * ratio(s.kcal, adjGoal) + 0.25 * ratio(s.steps, cfg.stepGoal) + 0.15 * ratio(s.im, cfg.imWeekGoal / 7);
+    const nowMin = s.time;
+    const work = ratio(nowMin - cfg.workStart * 60, (cfg.workEnd - cfg.workStart) * 60);
+    const overtime = Math.max(0, nowMin - cfg.workEnd * 60);
+    const overloaded = overtime > 60 || s.meet * 60 > cfg.meetingCap;
+    const life = 0.5 * ratio(s.calm, cfg.calmGoal) + 0.5 * ratio(s.pers + s.read, cfg.lifeGoal + cfg.readGoal);
+    let nudge = ['', C.text];
+    const endMin = cfg.workEnd * 60;
+    if (ready < 30) nudge = ['RECOVERY DAY', C.stop];
+    else if (s.stress >= 76) nudge = ['BREATHE 2 MIN', C.warn];
+    else if (overtime > 60) nudge = ['WRAP UP WORK', C.warn];
+    else if (s.meet * 60 > cfg.meetingCap && nowMin < endMin) nudge = ['GUARD A GAP', C.warn];
+    else if (body < 0.5 && ready >= 50 && nowMin >= 900 && nowMin < cfg.bed - 150) nudge = ['TRAIN WINDOW', C.life];
+    else if (s.read < cfg.readGoal && nowMin >= 1140 && nowMin < cfg.bed - 30) nudge = ['READ ' + (cfg.readGoal - s.read) + ' MIN', C.life];
+    else if (nowMin >= cfg.bed - 60) nudge = ['WIND DOWN', C.text];
+    else if (nowMin >= 660 && nowMin < endMin && s.steps < cfg.stepGoal * 0.3) nudge = ['WALK 10', C.life];
+    else if (body >= 0.9 && life >= 0.6) nudge = ['IN BALANCE', C.life];
+    return { ready, factor, adjGoal, body, work, life, overloaded, overtime, nudge };
+  }
+
+  // ---- Face renderer (416 px space, degrees: 0 = 3 o'clock, counter-clockwise)
+  const CX = 208, CY = 208, R = 194, PEN = 12;
+  const pt = (deg, r) => [CX + r * Math.cos(deg * Math.PI / 180), CY - r * Math.sin(deg * Math.PI / 180)];
+  function arc(fromDeg, toDeg) { // clockwise on screen
+    const [x1, y1] = pt(fromDeg, R), [x2, y2] = pt(toDeg, R);
+    return `M${x1.toFixed(1)} ${y1.toFixed(1)} A${R} ${R} 0 0 1 ${x2.toFixed(1)} ${y2.toFixed(1)}`;
+  }
+  function pillar(center, pct, color, label) {
+    const start = center + 55;
+    let out = `<path d="${arc(start, center - 55)}" stroke="${C.track}" stroke-width="${PEN}" fill="none" stroke-linecap="round"/>`;
+    if (pct > 0.01) out += `<path class="arc-fill" d="${arc(start, start - Math.max(2, 110 * pct))}" stroke="${color}" stroke-width="${PEN}" fill="none" stroke-linecap="round"/>`;
+    const [lx, ly] = pt(center, R - PEN - 17);
+    out += `<text x="${lx}" y="${ly}" fill="${color}" font-size="17" font-weight="600" text-anchor="middle" dominant-baseline="central">${label}</text>`;
+    return out;
+  }
+  const fmtTime = m => `${Math.floor(m / 60) % 12 || 12}:${String(m % 60).padStart(2, '0')}`;
+  const steps = v => v >= 1000 ? (v / 1000).toFixed(1) + 'k' : String(v);
+  const readyColor = r => r >= 70 ? C.life : r >= 40 ? C.warn : C.stop;
+  function face(svg, s) {
+    const m = model(s);
+    const t = (x, y, size, fill, str, w = 500, fam = "'IBM Plex Sans', system-ui, sans-serif") =>
+      `<text x="${x}" y="${y}" fill="${fill}" font-size="${size}" font-weight="${w}" font-family="${fam}" text-anchor="middle" dominant-baseline="central" letter-spacing="0.5">${str}</text>`;
+    const nextStr = s.next >= 0 ? (s.next < 60 ? `MTG IN ${s.next}m` : `MTG IN ${Math.floor(s.next / 60)}h${String(s.next % 60).padStart(2, '0')}`) : '';
+    svg.innerHTML =
+      `<circle cx="208" cy="208" r="208" fill="#000"/>` +
+      pillar(90, m.work, m.overloaded ? C.warn : C.work, 'W') +
+      pillar(330, clamp(m.body, 0, 1), C.body, 'B') +
+      pillar(210, clamp(m.life, 0, 1), C.life, 'L') +
+      t(208, 87, 18, C.muted, 'THU 5') +
+      t(208, 154, 92, C.text, fmtTime(s.time), 600, "'Barlow Condensed', 'Arial Narrow', sans-serif") +
+      t(121, 231, 21, C.text, 'HR ' + s.hr) + t(208, 231, 21, C.text, steps(s.steps)) + t(295, 231, 21, C.text, 'BB ' + s.bb) +
+      t(208, 268, 18, readyColor(m.ready), 'READY ' + m.ready, 600) +
+      t(208, 304, 17, (s.next >= 0 && s.next <= 10) ? C.text : C.work, nextStr, (s.next >= 0 && s.next <= 10) ? 600 : 500) +
+      t(208, 339, 18, m.nudge[1], m.nudge[0], 600);
+    return m;
+  }
+
+  // ---- Controls
+  const fields = [
+    ['time', 'Time of day', 300, 1410, 15, v => fmtTime(v) + (v >= 720 ? ' pm' : ' am')],
+    ['bb', 'Body Battery', 0, 100, 1], ['sleep', 'Sleep score', 0, 100, 1],
+    ['stress', 'Stress now', 0, 100, 1], ['recovery', 'Recovery time (h)', 0, 72, 1],
+    ['kcal', 'Active kcal so far', 0, 2000, 10], ['steps', 'Steps', 0, 25000, 100],
+    ['im', 'Intensity min today', 0, 180, 1], ['calm', 'Calm min since waking', 0, 300, 5],
+    ['meet', 'Meetings today (h)', 0, 9, 0.5], ['pers', 'Personal time booked (min)', 0, 240, 5],
+    ['read', 'Reading done (min)', 0, 90, 5], ['next', 'Next event in (min, −1 = none)', -1, 240, 1],
+    ['hr', 'Heart rate', 40, 180, 1],
+  ];
+  const presets = {
+    strong:   { time: 615, bb: 82, sleep: 86, stress: 22, recovery: 10, kcal: 720, steps: 9200, im: 70, calm: 60, meet: 3, pers: 60, read: 0, next: 35, hr: 58 },
+    short:    { time: 600, bb: 31, sleep: 48, stress: 58, recovery: 30, kcal: 380, steps: 4100, im: 25, calm: 10, meet: 6, pers: 0, read: 0, next: 7, hr: 71 },
+    evening:  { time: 1200, bb: 38, sleep: 79, stress: 30, recovery: 40, kcal: 1350, steps: 17800, im: 110, calm: 120, meet: 4, pers: 90, read: 0, next: -1, hr: 62 },
+    overtime: { time: 1170, bb: 44, sleep: 72, stress: 61, recovery: 0, kcal: 290, steps: 5200, im: 10, calm: 25, meet: 5.5, pers: 0, read: 0, next: -1, hr: 76 },
+  };
+  const state = Object.assign({}, presets.strong);
+  const box = document.getElementById('controls');
+  const outs = {};
+  for (const [k, label, min, max, step, f] of fields) {
+    const wrap = document.createElement('div'); wrap.className = 'ctl';
+    wrap.innerHTML = `<label for="ctl-${k}"><span>${label}</span><output id="out-${k}"></output></label><input type="range" id="ctl-${k}" min="${min}" max="${max}" step="${step}">`;
+    box.appendChild(wrap);
+    const input = wrap.querySelector('input');
+    input.value = state[k];
+    outs[k] = { input, out: wrap.querySelector('output'), f: f || (v => v) };
+    input.addEventListener('input', () => { state[k] = Number(input.value); render(); });
+  }
+  box.querySelectorAll('[data-preset]').forEach(b => b.addEventListener('click', () => {
+    Object.assign(state, presets[b.dataset.preset]);
+    for (const k in outs) outs[k].input.value = state[k];
+    render();
+  }));
+  const simSvg = document.getElementById('simWatch');
+  function render() {
+    for (const k in outs) outs[k].out.textContent = outs[k].f(state[k]);
+    const m = face(simSvg, state);
+    const pct = v => Math.round(clamp(v, 0, 1) * 100) + '%';
+    document.getElementById('scores').innerHTML =
+      `<div class="score"><b style="color:${readyColor(m.ready)}">${m.ready}</b><span>Ready</span></div>` +
+      `<div class="score"><b class="t-work">${pct(m.work)}</b><span>Work</span></div>` +
+      `<div class="score"><b class="t-body">${pct(m.body)}</b><span>Body</span></div>` +
+      `<div class="score"><b class="t-life">${pct(m.life)}</b><span>Life</span></div>`;
+    document.getElementById('why').textContent =
+      `Body target today: ${m.adjGoal} active kcal (${Math.round(m.factor * 100)}% of the 900 kcal goal, set by READY ${m.ready}).` +
+      (m.overloaded ? ` Work is flagged amber: ${m.overtime > 60 ? Math.round(m.overtime) + ' min past 17:00' : 'meetings over the 4 h cap'}.` : '');
+  }
+  render();
+  face(document.getElementById('heroWatch'), presets.strong);
+})();
+</script>

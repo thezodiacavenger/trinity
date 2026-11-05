@@ -1,0 +1,31 @@
+<resources>
+    <settings>
+        <setting propertyKey="@Properties.ActiveKcalGoal" title="@Strings.SetKcalGoal">
+            <settingConfig type="numeric" min="100" max="4000"/>
+        </setting>
+        <setting propertyKey="@Properties.WorkStartHour" title="@Strings.SetWorkStart">
+            <settingConfig type="numeric" min="0" max="23"/>
+        </setting>
+        <setting propertyKey="@Properties.WorkEndHour" title="@Strings.SetWorkEnd">
+            <settingConfig type="numeric" min="0" max="23"/>
+        </setting>
+        <setting propertyKey="@Properties.MeetingCapMin" title="@Strings.SetMeetingCap">
+            <settingConfig type="numeric" min="0" max="720"/>
+        </setting>
+        <setting propertyKey="@Properties.CalmGoalMin" title="@Strings.SetCalmGoal">
+            <settingConfig type="numeric" min="0" max="600"/>
+        </setting>
+        <setting propertyKey="@Properties.LifeGoalMin" title="@Strings.SetLifeGoal">
+            <settingConfig type="numeric" min="0" max="600"/>
+        </setting>
+        <setting propertyKey="@Properties.ReadingGoalMin" title="@Strings.SetReadGoal">
+            <settingConfig type="numeric" min="0" max="300"/>
+        </setting>
+        <setting propertyKey="@Properties.BridgeUrl" title="@Strings.SetBridgeUrl">
+            <settingConfig type="alphaNumeric"/>
+        </setting>
+        <setting propertyKey="@Properties.BridgeToken" title="@Strings.SetBridgeToken">
+            <settingConfig type="alphaNumeric"/>
+        </setting>
+    </settings>
+</resources>
