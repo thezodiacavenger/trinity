@@ -8,6 +8,17 @@ Start a new session with: *"Read docs/SESSION_NOTES.md and continue the Trinity 
 - **Repo:** https://github.com/thezodiacavenger/trinity
 - **Started:** 2026-11-05
 
+## Session log
+
+| When (2026-11-05) | What happened |
+|---|---|
+| Ask 1 | Research executive athletes + Garmin 265; design the Trinity face and app. Brief published, face + Bridge drafted. |
+| Ask 2 | Pushed to GitHub (`main`). |
+| Ask 3 | Handoff notes, screenshots, screenshot tool. |
+| Ask 4 (15 min) | `CLAUDE.md`, GitHub Actions checks, issues #1–#6. |
+| Ask 5 (10 min) | Monkey C / Connect IQ API research; code hardened; findings in section 5 and on issue #2. |
+| Ask 6 | Final backup: notes updated, tagged `v0.1-framework`. |
+
 ---
 
 ## 1. The original request (owner's words, lightly condensed)
@@ -44,6 +55,10 @@ VP and CFO.
 | Weekly review (phone or web) | Not started | Phase 4. |
 | Design brief + simulator (`docs/trinity-brief.html`) | Done, published | The JS model in the page mirrors `Scoring.mc` and `Nudge.mc`; keep them in sync. |
 | Screenshots (`docs/screenshots/`) | Current | Regenerate with `node tools/screenshot_brief.js`. |
+| `CLAUDE.md` | Done | Auto-loaded by Claude Code: repo rules and where to start. |
+| GitHub Actions (`.github/workflows/checks.yml`) | Passing | Bridge tests + resource XML check on every push. |
+| GitHub issues #1–#6 | Open | The work queue: decisions, first build, week on the watch, Bridge, Phase 3 app, Phase 4 review. |
+| Monkey C API research | Done | Findings in section 5; code hardened to match (`Metrics.num`, typed `Config`). |
 
 ---
 
@@ -125,6 +140,15 @@ READ N MIN (after 19:00, reading short of goal, Bridge only) → WIND DOWN (with
 - Garmin forum, next calendar event date: https://forums.garmin.com/developer/connect-iq/f/discussion/362370/any-way-to-detect-next-calendar-event-date
 - Garmin forum, calendar on watch face: https://forums.garmin.com/developer/connect-iq/f/discussion/214598/calendar-on-watch-face
 - Garmin, The Real Devices of Connect IQ: https://forums.garmin.com/developer/connect-iq/b/news-announcements/posts/the-real-devices-of-connect-iq-part-1
+- Garmin, Complication class: https://developer.garmin.com/connect-iq/api-docs/Toybox/Complications/Complication.html
+- Garmin forum, Complications questions: https://forums.garmin.com/developer/connect-iq/f/discussion/314641/complications-questions/1574292
+- Garmin forum, Complication value updates: https://forums.garmin.com/developer/connect-iq/f/discussion/367921/complication-value-updates
+- Garmin forum, Stupid complications questions: https://forums.garmin.com/developer/connect-iq/f/discussion/349460/stupid-complications-questions/1695670
+- Garmin forum, Integrating Training Status into Watchface: https://forums.garmin.com/developer/connect-iq/f/app-ideas/365103/integrating-training-status-into-watchface
+- Garmin, The Road to Strict Typing: https://forums.garmin.com/developer/connect-iq/b/news-announcements/posts/the-road-to-strict-typing-is-paved-with-good-intentions
+- Garmin forum, getInitialView error: https://forums.garmin.com/developer/connect-iq/f/discussion/321512/getinitialview-error-on-fenix-6pro-6s-solar-etc-but-not-on-fenix-6x-pro
+- Garmin, Forerunner 265 in SDK Manager: https://forums.garmin.com/developer/connect-iq/b/news-announcements/posts/forerunner-265-and-965-now-available-in-connect-iq-sdk-manager
+- Garmin device reference index: https://developer.garmin.com/connect-iq/device-reference
 
 ---
 
