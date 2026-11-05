@@ -5,6 +5,10 @@ with a **READY** score at the core (sleep, Body Battery, stress, recovery time) 
 
 The design brief with the research, device capabilities, scoring model and an interactive simulator is in `docs/trinity-brief.html`.
 
+**Continuing later?** Start with [`docs/SESSION_NOTES.md`](docs/SESSION_NOTES.md): the original request, decisions made, open questions, research sources and next steps.
+
+![Trinity face, strong-morning scenario](docs/screenshots/face-strong.png)
+
 ## What is here
 
 | Path | What it is | Status |
@@ -18,6 +22,9 @@ The design brief with the research, device capabilities, scoring model and an in
 | `resources/` | Strings, user settings (goals, work hours, Bridge URL), launcher icon | — |
 | `bridge/google-apps-script/Code.gs` | Calendar Bridge: returns categories and minutes only, never titles | Logic tested |
 | `tools/test_bridge.js` | Tests for the Bridge's categorising and summarising | Passing |
+| `tools/screenshot_brief.js` | Renders the brief and saves face screenshots for each scenario | Working |
+| `docs/SESSION_NOTES.md` | Handoff: request, decisions, open questions, sources, next steps | — |
+| `docs/screenshots/` | Brief and simulated face for four scenarios | Current |
 
 ## Build and run
 
