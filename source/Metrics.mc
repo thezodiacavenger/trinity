@@ -105,11 +105,11 @@ module Metrics {
         }
 
         // ---- Readiness signals via native complications (API 4.2+)
-        s.bodyBattery = complication(Complications.COMPLICATION_TYPE_BODY_BATTERY);
-        s.stress = complication(Complications.COMPLICATION_TYPE_STRESS);
-        s.recoveryMin = complication(Complications.COMPLICATION_TYPE_RECOVERY_TIME);
+        s.bodyBattery = num(complication(Complications.COMPLICATION_TYPE_BODY_BATTERY));
+        s.stress = num(complication(Complications.COMPLICATION_TYPE_STRESS));
+        s.recoveryMin = num(complication(Complications.COMPLICATION_TYPE_RECOVERY_TIME));
         if (Complications has :COMPLICATION_TYPE_SLEEP_SCORE) {
-            s.sleepScore = complication(Complications.COMPLICATION_TYPE_SLEEP_SCORE);
+            s.sleepScore = num(complication(Complications.COMPLICATION_TYPE_SLEEP_SCORE));
         }
 
         // Fallbacks through SensorHistory if a complication is missing
@@ -137,6 +137,13 @@ module Metrics {
             if (p.sleepTime != null) { s.sleepSec = p.sleepTime.value(); }
         }
         return s;
+    }
+
+    //! Keep only numeric complication values. Off-wrist readings come back null.
+    function num(v) {
+        if (v instanceof Number) { return v; }
+        if (v instanceof Float || v instanceof Double || v instanceof Long) { return v.toNumber(); }
+        return null;
     }
 
     function latest(it) {

@@ -2,6 +2,19 @@ import Toybox.Application;
 import Toybox.Lang;
 import Toybox.Time;
 
+//! User settings, read from Garmin Connect app settings (resources/settings).
+class Config {
+    var kcalGoal as Number = 900;
+    var workStart as Number = 8;
+    var workEnd as Number = 17;
+    var meetingCap as Number = 240;
+    var calmGoal as Number = 90;
+    var lifeGoal as Number = 90;
+    var readGoal as Number = 30;
+
+    function initialize() {}
+}
+
 //! The Trinity model.
 //!
 //!   WORK  - where you are in the work day, and whether it is spilling over (overtime, meeting overload)
@@ -33,16 +46,16 @@ module Scoring {
         }
     }
 
-    function loadConfig() as Dictionary {
-        return {
-            :kcalGoal   => prop("ActiveKcalGoal", 900),
-            :workStart  => prop("WorkStartHour", 8),
-            :workEnd    => prop("WorkEndHour", 17),
-            :meetingCap => prop("MeetingCapMin", 240),
-            :calmGoal   => prop("CalmGoalMin", 90),
-            :lifeGoal   => prop("LifeGoalMin", 90),
-            :readGoal   => prop("ReadingGoalMin", 30)
-        };
+    function loadConfig() as Config {
+        var c = new Config();
+        c.kcalGoal   = prop("ActiveKcalGoal", 900) as Number;
+        c.workStart  = prop("WorkStartHour", 8) as Number;
+        c.workEnd    = prop("WorkEndHour", 17) as Number;
+        c.meetingCap = prop("MeetingCapMin", 240) as Number;
+        c.calmGoal   = prop("CalmGoalMin", 90) as Number;
+        c.lifeGoal   = prop("LifeGoalMin", 90) as Number;
+        c.readGoal   = prop("ReadingGoalMin", 30) as Number;
+        return c;
     }
 
     //! Calendar data from the optional Trinity Bridge, or null if absent / older than 3 hours.
@@ -81,16 +94,16 @@ module Scoring {
 
     // ------------------------------------------------------------------ BODY
 
-    function body(s as Snapshot, cfg as Dictionary, ready) as Float {
-        var kcalGoal = cfg[:kcalGoal] * targetFactor(ready);
+    function body(s as Snapshot, cfg as Config, ready) as Float {
+        var kcalGoal = cfg.kcalGoal * targetFactor(ready);
         var imDaily = (s.intensityWeekGoal != null) ? s.intensityWeekGoal / 7.0 : 22.0;
         return 0.60 * ratio(s.activeKcal, kcalGoal)
              + 0.25 * ratio(s.steps, s.stepGoal)
              + 0.15 * ratio(s.intensityToday, imDaily);
     }
 
-    function adjustedKcalGoal(cfg as Dictionary, ready) as Number {
-        return (cfg[:kcalGoal] * targetFactor(ready)).toNumber();
+    function adjustedKcalGoal(cfg as Config, ready) as Number {
+        return (cfg.kcalGoal * targetFactor(ready)).toNumber();
     }
 
     // ------------------------------------------------------------------ WORK
@@ -100,36 +113,36 @@ module Scoring {
     }
 
     //! Minutes past the configured end of the work day (0 if not past it, or not a work day).
-    function overtimeMin(s as Snapshot, cfg as Dictionary) as Number {
+    function overtimeMin(s as Snapshot, cfg as Config) as Number {
         if (!isWorkday(s)) { return 0; }
-        var endSec = cfg[:workEnd] * 3600;
+        var endSec = cfg.workEnd * 3600;
         return (s.secOfDay > endSec) ? (s.secOfDay - endSec) / 60 : 0;
     }
 
     //! Work arc = progress through the planned work day.
-    function work(s as Snapshot, cfg as Dictionary) as Float {
+    function work(s as Snapshot, cfg as Config) as Float {
         if (!isWorkday(s)) { return 0.0; }
-        var startSec = cfg[:workStart] * 3600;
-        var endSec = cfg[:workEnd] * 3600;
+        var startSec = cfg.workStart * 3600;
+        var endSec = cfg.workEnd * 3600;
         if (endSec <= startSec) { return 0.0; }
         return clamp((s.secOfDay - startSec).toFloat() / (endSec - startSec), 0.0, 1.0);
     }
 
     //! True when the day is out of balance on the WORK side: meetings over cap, or > 1 h overtime.
-    function workOverloaded(s as Snapshot, cfg as Dictionary, b) as Boolean {
+    function workOverloaded(s as Snapshot, cfg as Config, b) as Boolean {
         if (overtimeMin(s, cfg) > 60) { return true; }
-        if (b != null && b.get("meet") != null && cfg[:meetingCap] > 0) {
-            return b.get("meet") > cfg[:meetingCap];
+        if (b != null && b.get("meet") != null && cfg.meetingCap > 0) {
+            return b.get("meet") > cfg.meetingCap;
         }
         return false;
     }
 
     // ------------------------------------------------------------------ LIFE
 
-    function life(s as Snapshot, cfg as Dictionary, b) as Float {
-        var calm = ratio(s.calmMin, cfg[:calmGoal]);
+    function life(s as Snapshot, cfg as Config, b) as Float {
+        var calm = ratio(s.calmMin, cfg.calmGoal);
         if (b == null) { return calm; }
         var personal = (b.get("pers") != null ? b.get("pers") : 0) + (b.get("read") != null ? b.get("read") : 0);
-        return 0.5 * calm + 0.5 * ratio(personal, cfg[:lifeGoal] + cfg[:readGoal]);
+        return 0.5 * calm + 0.5 * ratio(personal, cfg.lifeGoal + cfg.readGoal);
     }
 }

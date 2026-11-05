@@ -94,10 +94,17 @@ READ N MIN (after 19:00, reading short of goal, Bridge only) → WIND DOWN (with
 - Watch-face memory is limited (about 128 KB on comparable 416 px AMOLED devices; check the simulator's memory view for the 265).
 - Targets in `manifest.xml`: `fr265`, `fr265s`, `fr965`.
 
+### Confirmed by research (2026-11-05)
+
+- `ComplicationSubscriber` is the right manifest permission, and only watch faces may use it (device apps get a compile error).
+- Reading `Complications.getComplication(new Complications.Id(TYPE)).value` on each update works without subscribing. Subscribing only adds change callbacks.
+- `Complication.value` is nullable. Body Battery and stress return null when the watch is off the wrist. `Metrics.num()` keeps only numeric values.
+- Garmin's type checker has levels from None to Strict. Settings now use a typed `Config` class instead of a Dictionary so arithmetic type-checks at stricter levels.
+- Simulator and device can disagree on complication values (reported for training status). Test on the watch.
+
 ### Verify on first build
 
 - Exact format of the calendar complication string (`"2:30p"` vs `"14:30"`). `Metrics.minutesUntil` handles both.
-- That the `ComplicationSubscriber` permission name is right and complications read without subscribing.
 - Estimated active calories vs Garmin Connect (target within ~10%).
 - Fonts and positions on 416 px (265) and 360 px (265S).
 - Whether Google Apps Script's redirect works with `makeWebRequest`. If not, host the Bridge on a Cloudflare Worker.

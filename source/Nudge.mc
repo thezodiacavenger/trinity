@@ -10,9 +10,9 @@ module Nudge {
     const TONE_CAUTION = 2;
     const TONE_STOP = 3;
 
-    function pick(s as Snapshot, cfg as Dictionary, b, ready, bodyPct as Float, lifePct as Float) as Array {
+    function pick(s as Snapshot, cfg as Config, b, ready, bodyPct as Float, lifePct as Float) as Array {
         var nowMin = s.hour * 60 + s.minute;
-        var endMin = cfg[:workEnd] * 60;
+        var endMin = cfg.workEnd * 60;
         var bedMin = (s.sleepSec != null) ? s.sleepSec / 60 : 22 * 60 + 30;
         var workday = Scoring.isWorkday(s);
 
@@ -40,9 +40,9 @@ module Nudge {
         }
 
         // 4. Evening: reading, then sleep.
-        if (b != null && b.get("read") != null && b.get("read") < cfg[:readGoal]
+        if (b != null && b.get("read") != null && b.get("read") < cfg.readGoal
                 && nowMin >= 19 * 60 && nowMin < bedMin - 30) {
-            var left = cfg[:readGoal] - b.get("read");
+            var left = cfg.readGoal - b.get("read");
             return ["READ " + left.format("%d") + " MIN", TONE_GO];
         }
         if (nowMin >= bedMin - 60 && nowMin < bedMin + 120) {
