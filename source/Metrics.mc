@@ -49,9 +49,9 @@ class Snapshot {
 module Metrics {
 
     //! Read one native complication. Returns null if the device or firmware does not expose it.
-    function complication(type) {
+    function complication(kind) {
         try {
-            var c = Complications.getComplication(new Complications.Id(type));
+            var c = Complications.getComplication(new Complications.Id(kind));
             return (c != null) ? c.value : null;
         } catch (e) {
             return null;

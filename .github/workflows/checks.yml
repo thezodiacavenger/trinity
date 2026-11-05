@@ -1,0 +1,19 @@
+name: checks
+on:
+  push:
+  pull_request:
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Bridge logic tests
+        run: node tools/test_bridge.js
+      - name: Resource XML is well-formed
+        run: |
+          for f in manifest.xml resources/*/*.xml; do
+            python3 -c "import sys, xml.dom.minidom as m; m.parse(sys.argv[1])" "$f" && echo "ok $f"
+          done
