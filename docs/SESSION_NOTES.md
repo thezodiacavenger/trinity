@@ -17,7 +17,7 @@ Start a new session with: *"Read docs/SESSION_NOTES.md and continue the Trinity 
 | Ask 3 | Handoff notes, screenshots, screenshot tool. |
 | Ask 4 (15 min) | `CLAUDE.md`, GitHub Actions checks, issues #1–#6. |
 | Ask 5 (10 min) | Monkey C / Connect IQ API research; code hardened; findings in section 5 and on issue #2. |
-| Ask 6 | Final backup: notes updated, tagged `v0.1-framework`. |
+| Ask 6 | Final backup: notes updated, all work on `main` at GitHub. (Tags and releases are blocked from cloud sessions; create a `v0.1-framework` tag from GitHub's web UI if wanted.) |
 
 ---
 
